@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Doğum Günlerim - Biricik Erva'mız</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .select-row {
+      display: flex;
+      gap: 0.8rem;
+      flex-wrap: wrap;
+      align-items: end;
+      margin-bottom: 1rem;
+    }
+    .select-group {
+      flex: 1;
+      min-width: 140px;
+    }
+    .select-group label {
+      display: block;
+      margin-bottom: 0.4rem;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+    .select-group select {
+      width: 100%;
+      padding: 0.8rem 1rem;
+      border: 2px solid #E8B4B8;
+      border-radius: 12px;
+      font-family: 'Quicksand', sans-serif;
+      font-size: 1rem;
+      background: white;
+    }
+    .notes-view, .album-view { margin-top: 1.5rem; }
+    .photo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 0.8rem;
+      margin-top: 1rem;
+    }
+    .photo-item {
+      aspect-ratio: 1;
+      border-radius: 12px;
+      overflow: hidden;
+      cursor: pointer;
+      border: 2px solid #F5D5D0;
+      background: #FFFBF7;
+    }
+    .photo-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s;
+    }
+    .photo-item:hover img {
+      transform: scale(1.05);
+    }
+    /* Lightbox */
+    .lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.9);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    .lightbox.active { display: flex; }
+    .lightbox img {
+      max-width: 95%;
+      max-height: 90vh;
+      border-radius: 12px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    }
+    .lightbox-close {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: white;
+      border: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #4A403A;
+    }
+  </style>
+</head>
+<body>
+<script>
+if(sessionStorage.getItem("ervaAuth")!=="ok"){window.location.href="index.html";}
+</script>
+  <div class="container">
+    <a href="index.html" class="back-link">← Anasayfaya Dön</a>
+    
+    <header>
+      <h1 class="site-title" style="font-size: 2.8rem;">🎂 Doğum Günlerim</h1>
+      <p class="subtitle">Notlar ve fotoğraf albümü</p>
+    </header>
+
+    <div class="card">
+      <h2 style="font-family: 'Cormorant Garamond', serif; color: #7D9A7A; margin-bottom: 1rem;">Tarih Seç</h2>
+      
+      <div class="select-row">
+        <div class="select-group">
+          <label for="yearSelect">Yıl</label>
+          <select id="yearSelect"></select>
+        </div>
+        <div class="select-group">
+          <label for="monthSelect">Ay</label>
+          <select id="monthSelect">
+            <option value="10" selected>Ekim</option>
+          </select>
+        </div>
+        <button id="showBtn" class="btn">Göster</button>
+      </div>
+    </div>
+
+    <div id="notesView" class="notes-view" style="display:none;">
+      <div class="card">
+        <h2 id="selectedTitle" style="font-family: 'Cormorant Garamond', serif; color: #7D9A7A; margin-bottom: 1rem;"></h2>
+        <div id="yearNotes"></div>
+      </div>
+    </div>
+
+    <div id="albumView" class="album-view" style="display:none;">
+      <div class="card">
+        <h2 id="albumTitle" style="font-family: 'Cormorant Garamond', serif; color: #7D9A7A; margin-bottom: 0.5rem;"></h2>
+        <label for="albumUpload" class="btn" style="margin-bottom:1rem; display:inline-block;">Fotoğraf Ekle 📷</label>
+        <input type="file" id="albumUpload" accept="image/*" multiple style="display:none;">
+        <div id="photoGrid" class="photo-grid"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lightbox -->
+  <div id="lightbox" class="lightbox">
+    <button class="lightbox-close" onclick="closeLightbox()">×</button>
+    <img id="lightboxImg" alt="Büyütülmüş fotoğraf">
+  </div>
+
+  <footer>
+    <p>Erva'nın doğum günü anıları 💖</p>
+  </footer>
+
+  <script>
+    function getBirthdayNotes() {
+      return JSON.parse(localStorage.getItem('birthdayNotes') || '[]');
+    }
+
+    function getAlbum(year) {
+      const key = 'album_' + year;
+      return JSON.parse(localStorage.getItem(key) || '[]');
+    }
+
+    function saveAlbum(year, photos) {
+      localStorage.setItem('album_' + year, JSON.stringify(photos));
+    }
+
+    function populateYears() {
+      const select = document.getElementById('yearSelect');
+      const currentYear = new Date().getFullYear();
+      const startYear = 2026;
+      const endYear = Math.max(currentYear + 5, 2035);
+      
+      select.innerHTML = '';
+      for (let y = endYear; y >= startYear; y--) {
+        const opt = document.createElement('option');
+        opt.value = y;
+        opt.textContent = y;
+        select.appendChild(opt);
+      }
+      const now = new Date();
+      let defaultYear = now.getFullYear();
+      if (now.getMonth() > 9 || (now.getMonth() === 9 && now.getDate() > 31)) {
+        defaultYear++;
+      }
+      select.value = Math.max(defaultYear, startYear);
+    }
+
+    function showContent() {
+      const year = parseInt(document.getElementById('yearSelect').value);
+      
+      // Notlar
+      const notes = getBirthdayNotes()
+        .filter(n => n.year === year)
+        .sort((a, b) => b.timestamp - a.timestamp);
+
+      document.getElementById('selectedTitle').textContent = `31 Ekim ${year} Notları`;
+      const notesContainer = document.getElementById('yearNotes');
+
+      if (notes.length === 0) {
+        notesContainer.innerHTML = '<p class="empty-state">Bu doğum günü için henüz not bırakılmamış.</p>';
+      } else {
+        notesContainer.innerHTML = notes.map(note => `
+          <div class="note-card">
+            <p class="note-text">${note.text.replace(/\n/g, '<br>')}</p>
+            <div class="note-footer">
+              <span class="note-author">${note.author === 'Anne' ? '👩' : '👨'} ${note.author}</span>
+              <span class="note-date">${note.date}</span>
+            </div>
+          </div>
+        `).join('');
+      }
+      document.getElementById('notesView').style.display = 'block';
+
+      // Albüm
+      document.getElementById('albumTitle').textContent = `${year} Fotoğraf Albümü`;
+      renderAlbum(year);
+      document.getElementById('albumView').style.display = 'block';
+
+      document.getElementById('notesView').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function renderAlbum(year) {
+      const photos = getAlbum(year);
+      const grid = document.getElementById('photoGrid');
+      
+      if (photos.length === 0) {
+        grid.innerHTML = '<p class="empty-state" style="grid-column:1/-1;">Henüz fotoğraf eklenmemiş.</p>';
+        return;
+      }
+
+      grid.innerHTML = photos.map((src, i) => `
+        <div class="photo-item" onclick="openLightbox('${src}')">
+          <img src="${src}" alt="Fotoğraf ${i+1}">
+        </div>
+      `).join('');
+    }
+
+    document.getElementById('albumUpload').addEventListener('change', function(e) {
+      const year = parseInt(document.getElementById('yearSelect').value);
+      const files = Array.from(e.target.files);
+      if (!files.length) return;
+
+      const photos = getAlbum(year);
+      let loaded = 0;
+
+      files.forEach(file => {
+        const reader = new FileReader();
+        reader.onload = function(ev) {
+          photos.push(ev.target.result);
+          loaded++;
+          if (loaded === files.length) {
+            saveAlbum(year, photos);
+            renderAlbum(year);
+          }
+        };
+        reader.readAsDataURL(file);
+      });
+      e.target.value = '';
+    });
+
+    function openLightbox(src) {
+      document.getElementById('lightboxImg').src = src;
+      document.getElementById('lightbox').classList.add('active');
+    }
+
+    function closeLightbox() {
+      document.getElementById('lightbox').classList.remove('active');
+    }
+
+    document.getElementById('lightbox').addEventListener('click', function(e) {
+      if (e.target === this) closeLightbox();
+    });
+
+    document.getElementById('showBtn').addEventListener('click', showContent);
+    populateYears();
+  </script>
+</body>
+</html>

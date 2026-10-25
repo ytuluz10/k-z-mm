@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Anne Girişi - Biricik Erva'mız</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<script>
+if(sessionStorage.getItem("ervaAuth")!=="ok"){window.location.href="index.html";}
+</script>
+  <div class="container">
+    <a href="index.html" class="back-link">← Anasayfaya Dön</a>
+    
+    <header>
+      <h1 class="site-title" style="font-size: 2.8rem;">👩 Anne Girişi</h1>
+      <p class="subtitle">Biricik kızım için notlarımı bırakıyorum</p>
+    </header>
+
+    <div class="card" style="text-align:center; padding:1.5rem;">
+      <h2 style="font-family: 'Cormorant Garamond', serif; color: #7D9A7A; margin-bottom: 1rem;">Anne'nin Fotoğrafı</h2>
+      <div style="width:180px; height:180px; margin:0.5rem auto 1rem; border-radius:50%; border:5px solid #F5D5D0; box-shadow:0 0 0 4px #A8C5A5, 0 10px 30px rgba(125,154,122,0.25); overflow:hidden; background:#FFFBF7; display:flex; align-items:center; justify-content:center;">
+        <div id="placeholder" style="font-size:3.5rem;">👩</div>
+        <img id="photoImg" style="display:none; width:100%; height:100%; object-fit:cover;" alt="Anne">
+      </div>
+      <label for="photoUpload" class="btn">Fotoğraf Yükle 📷</label>
+      <input type="file" id="photoUpload" accept="image/*">
+    </div>
+
+    <div class="card">
+      <h2 style="font-family: 'Pacifico', cursive; color: #FF8DC7; margin-bottom: 1.5rem;">Yeni Not Bırak</h2>
+      <form id="noteForm">
+        <div class="form-group">
+          <label for="noteType">Not Türü</label>
+          <select id="noteType" required>
+            <option value="birthday">🎉 Doğum Günü Notu</option>
+            <option value="general">📝 Diğer Gün Notu</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="noteText">Notunuz</label>
+          <textarea id="noteText" placeholder="Tatlı sözlerinizi, dileklerinizi buraya yazın... 💖" required></textarea>
+        </div>
+        <button type="submit" class="btn">Notu Kaydet 🌸</button>
+      </form>
+    </div>
+
+    <div class="card">
+      <h2 style="font-family: 'Pacifico', cursive; color: #FF8DC7; margin-bottom: 1rem;">Son Notlarım</h2>
+      <div id="myNotes">
+        <p class="empty-state">Henüz not bırakmadınız.</p>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>Anne'nin sevgi dolu notları 💖</p>
+  </footer>
+
+  <script>
+    const AUTHOR = 'Anne';
+    
+    async function saveNote(type, text) {
+      const now = new Date();
+      let year = now.getFullYear();
+      if (now.getMonth() > 9 || (now.getMonth() === 9 && now.getDate() > 31)) {
+        year += 1;
+      }
+      const note = {
+        author: AUTHOR,
+        text: text.trim(),
+        type: type,
+        date: now.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' }),
+        year: type === 'birthday' ? year : null,
+        timestamp: Date.now()
+      };
+      await saveNoteToCloud(note);
+    }
+    
+    async function loadMyNotes() {
+      const container = document.getElementById('myNotes');
+      try {
+        const all = await getNotesFromCloud();
+        const myNotes = all.filter(n => n.author === AUTHOR);
+        if (myNotes.length === 0) {
+          container.innerHTML = '<p class="empty-state">Henüz not bırakmadınız.</p>';
+          return;
+        }
+        container.innerHTML = myNotes.map(note => `
+          <div class="note-card">
+            <p class="note-text">${note.text.replace(/\n/g, '<br>')}</p>
+            <div class="note-footer">
+              <span class="note-author">${note.type === 'birthday' ? '🎂' : '📝'} ${note.author}</span>
+              <span class="note-date">${note.date}</span>
+            </div>
+          </div>
+        `).join('');
+      } catch (e) {
+        container.innerHTML = '<p class="empty-state">Notlar yüklenemedi.</p>';
+      }
+    }
+    
+    document.getElementById('noteForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const type = document.getElementById('noteType').value;
+      const text = document.getElementById('noteText').value;
+      if (text.trim()) {
+        await saveNote(type, text);
+        document.getElementById('noteText').value = '';
+        loadMyNotes();
+        alert('Notunuz kaydedildi! 💖');
+      }
+    });
+    
+    loadMyNotes();
+
+    // Fotoğraf yükleme
+    const photoUpload = document.getElementById('photoUpload');
+    const photoImg = document.getElementById('photoImg');
+    const placeholder = document.getElementById('placeholder');
+
+    const savedPhoto = localStorage.getItem('annePhoto');
+    if (savedPhoto) {
+      photoImg.src = savedPhoto;
+      photoImg.style.display = 'block';
+      placeholder.style.display = 'none';
+    }
+
+    photoUpload.addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          const dataUrl = event.target.result;
+          photoImg.src = dataUrl;
+          photoImg.style.display = 'block';
+          placeholder.style.display = 'none';
+          localStorage.setItem('annePhoto', dataUrl);
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  </script>
+</body>
+</html>

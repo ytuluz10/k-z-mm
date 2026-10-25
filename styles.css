@@ -1,0 +1,427 @@
+/* Biricik Erva'mız - Botanik Hikaye Tasarımı */
+
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Quicksand:wght@300;400;500;600&family=Great+Vibes&display=swap');
+
+:root {
+  --cream: #FDF8F3;
+  --warm-white: #FFFBF7;
+  --blush: #F5D5D0;
+  --rose: #E8B4B8;
+  --sage: #A8C5A5;
+  --olive: #7D9A7A;
+  --terracotta: #C4A484;
+  --text: #4A403A;
+  --text-light: #7A6E66;
+  --gold: #D4AF8A;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Quicksand', sans-serif;
+  background-color: var(--cream);
+  background-image: 
+    url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23E8B4B8' fill-opacity='0.08'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  color: var(--text);
+  min-height: 100vh;
+  line-height: 1.6;
+}
+
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 4rem;
+}
+
+/* Header */
+header {
+  text-align: center;
+  padding: 2rem 0 1rem;
+  position: relative;
+}
+
+header::before {
+  content: '🌿';
+  font-size: 1.5rem;
+  position: absolute;
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
+  opacity: 0.6;
+}
+
+.site-title {
+  font-family: 'Great Vibes', cursive;
+  font-size: 4.5rem;
+  color: var(--rose);
+  font-weight: 400;
+  margin: 0.5rem 0 0.2rem;
+  letter-spacing: 1px;
+}
+
+.subtitle {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.3rem;
+  color: var(--olive);
+  font-style: italic;
+  font-weight: 500;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+}
+
+/* Photo Section */
+.photo-section {
+  text-align: center;
+  margin: 2rem 0;
+}
+
+.photo-frame {
+  width: 200px;
+  height: 200px;
+  margin: 1.5rem auto;
+  border-radius: 50%;
+  border: 6px solid var(--blush);
+  box-shadow: 
+    0 0 0 3px var(--cream),
+    0 0 0 8px var(--sage),
+    0 15px 35px rgba(168, 197, 165, 0.3);
+  overflow: hidden;
+  background: var(--warm-white);
+  position: relative;
+}
+
+.photo-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.photo-placeholder {
+  font-size: 4rem;
+  color: var(--blush);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+/* Cards */
+.card {
+  background: var(--warm-white);
+  border-radius: 16px;
+  padding: 2rem;
+  margin: 1.5rem 0;
+  border: 1px solid rgba(232, 180, 184, 0.3);
+  box-shadow: 0 8px 30px rgba(74, 64, 58, 0.06);
+  position: relative;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--sage), var(--rose), var(--gold));
+  border-radius: 16px 16px 0 0;
+}
+
+/* Birthday Banner */
+.birthday-banner {
+  background: linear-gradient(135deg, #FDF6F0 0%, #F8EDE6 100%);
+  border: 2px solid var(--blush);
+  border-radius: 20px;
+  padding: 2rem;
+  text-align: center;
+  margin: 2rem 0;
+  position: relative;
+}
+
+.birthday-banner::before,
+.birthday-banner::after {
+  content: '🌸';
+  position: absolute;
+  font-size: 1.8rem;
+  opacity: 0.5;
+}
+
+.birthday-banner::before { top: 1rem; left: 1.5rem; }
+.birthday-banner::after { top: 1rem; right: 1.5rem; }
+
+.birthday-banner h2 {
+  font-family: 'Great Vibes', cursive;
+  font-size: 2.4rem;
+  color: var(--rose);
+  margin-bottom: 0.5rem;
+}
+
+.birthday-banner p {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.1rem;
+  color: var(--text-light);
+  font-style: italic;
+}
+
+/* Countdown */
+.countdown {
+  display: flex;
+  justify-content: center;
+  gap: 0.8rem;
+  margin-top: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.countdown-item {
+  background: white;
+  border: 1px solid var(--blush);
+  border-radius: 12px;
+  padding: 0.9rem 1rem;
+  min-width: 75px;
+  text-align: center;
+}
+
+.countdown-number {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2rem;
+  font-weight: 600;
+  color: var(--olive);
+  line-height: 1;
+}
+
+.countdown-label {
+  font-size: 0.7rem;
+  color: var(--text-light);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-top: 0.3rem;
+  font-family: 'Quicksand', sans-serif;
+}
+
+/* Navigation */
+.nav-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.2rem;
+  margin-top: 2rem;
+}
+
+.nav-card {
+  background: white;
+  border-radius: 14px;
+  padding: 1.6rem 1.2rem;
+  text-align: center;
+  text-decoration: none;
+  color: var(--text);
+  border: 1px solid rgba(168, 197, 165, 0.4);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.nav-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 0;
+  background: linear-gradient(to top, rgba(168, 197, 165, 0.15), transparent);
+  transition: height 0.3s ease;
+}
+
+.nav-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--sage);
+  box-shadow: 0 10px 25px rgba(168, 197, 165, 0.2);
+}
+
+.nav-card:hover::after {
+  height: 100%;
+}
+
+.nav-card .icon {
+  font-size: 2.2rem;
+  margin-bottom: 0.6rem;
+  display: block;
+  position: relative;
+  z-index: 1;
+}
+
+.nav-card h3 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--olive);
+  margin-bottom: 0.3rem;
+  position: relative;
+  z-index: 1;
+}
+
+.nav-card p {
+  font-size: 0.85rem;
+  color: var(--text-light);
+  position: relative;
+  z-index: 1;
+}
+
+/* Buttons */
+.btn {
+  display: inline-block;
+  background: var(--olive);
+  color: white;
+  padding: 0.9rem 2rem;
+  border-radius: 30px;
+  text-decoration: none;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  font-size: 0.95rem;
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+  font-family: 'Quicksand', sans-serif;
+}
+
+.btn:hover {
+  background: #6B8A68;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(125, 154, 122, 0.3);
+}
+
+input[type="file"] {
+  display: none;
+}
+
+/* Forms */
+.form-group {
+  margin-bottom: 1.4rem;
+}
+
+label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: var(--text);
+  font-size: 0.9rem;
+}
+
+select, textarea, input[type="text"] {
+  width: 100%;
+  padding: 0.9rem 1.1rem;
+  border: 1.5px solid #E8DDD6;
+  border-radius: 10px;
+  font-family: 'Quicksand', sans-serif;
+  font-size: 1rem;
+  background: white;
+  color: var(--text);
+  transition: border-color 0.3s;
+}
+
+select:focus, textarea:focus, input:focus {
+  outline: none;
+  border-color: var(--sage);
+}
+
+textarea {
+  min-height: 140px;
+  resize: vertical;
+}
+
+/* Notes */
+.note-card {
+  background: linear-gradient(135deg, #FFFFFF 0%, #FFFBF7 100%);
+  border-radius: 18px;
+  padding: 1.6rem 1.6rem 1.2rem;
+  margin-bottom: 1.2rem;
+  border: 2px solid #F5D5D0;
+  box-shadow: 0 6px 20px rgba(232, 180, 184, 0.15);
+  position: relative;
+  overflow: hidden;
+}
+
+.note-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #A8C5A5, #E8B4B8, #D4AF8A);
+}
+
+.note-text {
+  line-height: 1.75;
+  color: var(--text);
+  font-size: 1.05rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.8rem;
+  border-bottom: 1px dashed rgba(232, 180, 184, 0.5);
+}
+
+.note-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+}
+
+.note-author {
+  font-weight: 700;
+  color: #7D9A7A;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.note-date {
+  color: #7A6E66;
+  font-size: 0.8rem;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 2rem;
+  color: var(--text-light);
+  font-style: italic;
+}
+
+.back-link {
+  display: inline-block;
+  margin-bottom: 1.5rem;
+  color: var(--olive);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.back-link:hover {
+  text-decoration: underline;
+}
+
+footer {
+  text-align: center;
+  margin-top: 3rem;
+  padding: 1.5rem;
+  color: var(--text-light);
+  font-size: 0.85rem;
+  border-top: 1px solid rgba(232, 180, 184, 0.3);
+}
+
+@media (max-width: 600px) {
+  .site-title {
+    font-size: 3rem;
+  }
+  .nav-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .photo-frame {
+    width: 170px;
+    height: 170px;
+  }
+}

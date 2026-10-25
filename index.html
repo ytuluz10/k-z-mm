@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <title>Biricik Erva'mız</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#7D9A7A">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Quicksand:wght@300;400;500;600&family=Great+Vibes&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --cream: #FFF9E6;
+      --warm-white: #FFFDF5;
+      --blush: #FFE4B5;
+      --rose: #FF6B6B;
+      --sage: #FFD93D;
+      --olive: #E63946;
+      --text: #4A403A;
+      --text-light: #7A6E66;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Quicksand', sans-serif;
+      background: #FDF8F3;
+      color: var(--text);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+    .app {
+      max-width: 480px;
+      margin: 0 auto;
+      min-height: 100vh;
+      background: linear-gradient(180deg, #FFFBF7 0%, #FDF8F3 100%);
+      position: relative;
+      overflow: hidden;
+    }
+    .header {
+      text-align: center;
+      padding: 2.5rem 1.5rem 1.5rem;
+      background: linear-gradient(180deg, #F8EDE6 0%, transparent 100%);
+    }
+    .site-title {
+      font-family: 'Great Vibes', cursive;
+      font-size: 3.2rem;
+      color: #E63946;
+      margin-bottom: 0.2rem;
+    }
+    .subtitle {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1rem;
+      color: #FFD93D;
+      font-style: italic;
+      letter-spacing: 2px;
+    }
+    .photo-box {
+      text-align: center;
+      padding: 1rem 1.5rem 1.5rem;
+    }
+    .photo-frame {
+      width: 160px;
+      height: 160px;
+      margin: 0 auto 1rem;
+      border-radius: 50%;
+      border: 5px solid #F5D5D0;
+      box-shadow: 0 0 0 4px #A8C5A5, 0 10px 30px rgba(125, 154, 122, 0.25);
+      overflow: hidden;
+      background: #FFFBF7;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .photo-frame img { width: 100%; height: 100%; object-fit: cover; }
+    .photo-placeholder { font-size: 3.5rem; }
+    .btn {
+      display: inline-block;
+      background: #E63946;
+      color: white;
+      padding: 0.8rem 1.6rem;
+      border-radius: 25px;
+      border: none;
+      font-family: 'Quicksand', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+    }
+    input[type="file"] { display: none; }
+    .banner {
+      margin: 1rem 1.2rem;
+      background: linear-gradient(135deg, #FDF6F0, #F8EDE6);
+      border: 2px solid #F5D5D0;
+      border-radius: 16px;
+      padding: 1.3rem 1rem;
+      text-align: center;
+    }
+    .banner h2 {
+      font-family: 'Great Vibes', cursive;
+      font-size: 1.8rem;
+      color: #E63946;
+      margin-bottom: 0.3rem;
+    }
+    .banner p { font-size: 0.85rem; color: #7A6E66; }
+    .countdown {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+    .cd-item {
+      background: white;
+      border: 1px solid #F5D5D0;
+      border-radius: 10px;
+      padding: 0.6rem 0.5rem;
+      min-width: 58px;
+    }
+    .cd-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #E63946;
+    }
+    .cd-label {
+      font-size: 0.6rem;
+      color: #7A6E66;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .menu {
+      padding: 0.5rem 1.2rem 2rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.8rem;
+    }
+    .menu-item {
+      background: white;
+      border-radius: 14px;
+      padding: 1.3rem 0.8rem;
+      text-align: center;
+      text-decoration: none;
+      color: var(--text);
+      border: 1px solid rgba(168, 197, 165, 0.4);
+      box-shadow: 0 4px 15px rgba(74, 64, 58, 0.05);
+    }
+    .menu-item .icon { font-size: 1.8rem; display: block; margin-bottom: 0.4rem; }
+    .menu-item h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.1rem;
+      color: #E63946;
+      margin-bottom: 0.2rem;
+    }
+    .menu-item p { font-size: 0.75rem; color: #7A6E66; }
+    footer {
+      text-align: center;
+      padding: 1.5rem;
+      font-size: 0.75rem;
+      color: #7A6E66;
+    }
+  </style>
+</head>
+<body>
+  <!-- Şifre Ekranı -->
+  <div id="loginScreen" style="display:none; position:fixed; inset:0; background:#FFFBF7; z-index:99999; align-items:center; justify-content:center; flex-direction:column; padding:2rem;">
+    <div style="text-align:center; max-width:320px;">
+      <h1 style="font-family:'Great Vibes',cursive; font-size:3rem; color:#E8B4B8; margin-bottom:0.5rem;">Biricik Erva'mız</h1>
+      <p style="color:#7A6E66; margin-bottom:1.5rem;">Bu sayfa özeldir</p>
+      <input id="passwordInput" type="password" placeholder="Şifre" style="width:100%; padding:0.9rem 1rem; border:2px solid #E8B4B8; border-radius:12px; font-size:1rem; margin-bottom:1rem;">
+      <button id="loginBtn" class="btn" style="width:100%;">Giriş Yap</button>
+      <p id="loginError" style="color:#c0392b; font-size:0.85rem; margin-top:0.8rem; display:none;">Yanlış şifre</p>
+    </div>
+  </div>
+
+  <div class="app" id="mainApp">
+    <div class="header">
+      <h1 class="site-title">Biricik Erva'mız</h1>
+      <p class="subtitle">Bir Bahçe Dolu Anı</p>
+    </div>
+
+    <div class="photo-box">
+      <div class="photo-frame" id="photoFrame">
+        <span class="photo-placeholder" id="placeholder">👶</span>
+        <img id="photoImg" style="display:none;" alt="Erva">
+      </div>
+      <label for="photoUpload" class="btn">Fotoğraf Yükle</label>
+      <input type="file" id="photoUpload" accept="image/*">
+    </div>
+
+    <div class="banner">
+      <h2>🎂 Doğum Günü</h2>
+      <p>Kalan süre</p>
+      <div class="countdown">
+        <div class="cd-item"><div class="cd-num" id="days">--</div><div class="cd-label">Gün</div></div>
+        <div class="cd-item"><div class="cd-num" id="hours">--</div><div class="cd-label">Saat</div></div>
+        <div class="cd-item"><div class="cd-num" id="minutes">--</div><div class="cd-label">Dk</div></div>
+        <div class="cd-item"><div class="cd-num" id="seconds">--</div><div class="cd-label">Sn</div></div>
+      </div>
+      <div id="msg" style="margin-top:0.8rem;font-size:0.85rem;color:#E8B4B8;font-weight:500;"></div>
+    </div>
+
+    <div class="menu">
+      <a href="./anne.html" class="menu-item"><span class="icon">👩</span><h3>Anne</h3><p>Not bırak</p></a>
+      <a href="./baba.html" class="menu-item"><span class="icon">👨</span><h3>Baba</h3><p>Not bırak</p></a>
+      <a href="./erva.html" class="menu-item"><span class="icon">👧</span><h3>Erva</h3><p>Notlarını oku</p></a>
+      <a href="./dogum-gunlerim.html" class="menu-item"><span class="icon">🎂</span><h3>Doğum Günlerim</h3><p>Yıllara göre notlar</p></a>
+      <a href="./ilk-yil.html" class="menu-item"><span class="icon">🌟</span><h3>Ömrümüzün En Güzel Yılı</h3><p>İlk yılın her ayı</p></a>
+      <a href="./diger-gunler.html" class="menu-item"><span class="icon">📝</span><h3>Diğer Günler</h3><p>Anılar</p></a>
+    </div>
+
+    <footer>Biricik Erva'mız 🌿</footer>
+  </div>
+
+  <script>
+    // Şifre koruması
+    const CORRECT_PASSWORD = 'erva2026'; // İstediğin şifreyi buraya yazabilirsin
+    const loginScreen = document.getElementById('loginScreen');
+    const mainApp = document.getElementById('mainApp');
+
+    function checkAuth() {
+      if (sessionStorage.getItem('ervaAuth') === 'ok') {
+        loginScreen.style.display = 'none';
+        mainApp.style.display = 'block';
+      } else {
+        loginScreen.style.display = 'flex';
+        mainApp.style.display = 'none';
+      }
+    }
+
+    document.getElementById('loginBtn').addEventListener('click', function() {
+      const input = document.getElementById('passwordInput').value;
+      if (input === CORRECT_PASSWORD) {
+        sessionStorage.setItem('ervaAuth', 'ok');
+        checkAuth();
+      } else {
+        document.getElementById('loginError').style.display = 'block';
+      }
+    });
+
+    document.getElementById('passwordInput').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') document.getElementById('loginBtn').click();
+    });
+
+    checkAuth();
+
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js').catch(() => {});
+    }
+
+    const photoUpload = document.getElementById('photoUpload');
+    const photoImg = document.getElementById('photoImg');
+    const placeholder = document.getElementById('placeholder');
+
+    const saved = localStorage.getItem('ervaPhoto');
+    if (saved) {
+      photoImg.src = saved;
+      photoImg.style.display = 'block';
+      placeholder.style.display = 'none';
+    }
+
+    photoUpload.addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(ev) {
+        photoImg.src = ev.target.result;
+        photoImg.style.display = 'block';
+        placeholder.style.display = 'none';
+        localStorage.setItem('ervaPhoto', ev.target.result);
+      };
+      reader.readAsDataURL(file);
+    });
+
+    function getNextBirthday() {
+      const now = new Date();
+      const year = now.getFullYear();
+      let birthday = new Date(year, 9, 31); // October = 9
+      if (now > birthday) {
+        birthday = new Date(year + 1, 9, 31);
+      }
+      return birthday;
+    }
+
+    function updateCountdown() {
+      const target = getNextBirthday().getTime();
+      const now = Date.now();
+      const dist = target - now;
+      const daysLeft = Math.floor(dist / 86400000);
+
+      const banner = document.querySelector('.banner');
+      const d = document.getElementById('days');
+      const h = document.getElementById('hours');
+      const m = document.getElementById('minutes');
+      const s = document.getElementById('seconds');
+      const msg = document.getElementById('msg');
+
+      // Sadece 30 gün kala sayacı göster
+      if (daysLeft > 30) {
+        banner.style.display = 'none';
+        return;
+      }
+      banner.style.display = 'block';
+
+      if (dist < 0) {
+        d.textContent = h.textContent = m.textContent = s.textContent = '0';
+        msg.textContent = '🎉 Mutlu Yıllar Erva!';
+        return;
+      }
+
+      d.textContent = daysLeft;
+      h.textContent = Math.floor((dist % 86400000) / 3600000).toString().padStart(2,'0');
+      m.textContent = Math.floor((dist % 3600000) / 60000).toString().padStart(2,'0');
+      s.textContent = Math.floor((dist % 60000) / 1000).toString().padStart(2,'0');
+
+      if (daysLeft === 0) {
+        msg.textContent = '🎂 Bugün Erva\'nın doğum günü!';
+      } else if (daysLeft <= 7) {
+        msg.textContent = '🌸 Çok az kaldı!';
+      } else {
+        msg.textContent = '';
+      }
+    }
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+  </script>
+</body>
+</html>

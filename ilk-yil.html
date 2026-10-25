@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ömrümüzün En Güzel Yılı - Biricik Erva'mız</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .month-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 0.8rem;
+      margin-top: 1rem;
+    }
+    .month-btn {
+      background: white;
+      border: 2px solid #E8B4B8;
+      border-radius: 14px;
+      padding: 1rem 0.6rem;
+      text-align: center;
+      font-family: 'Quicksand', sans-serif;
+      font-weight: 600;
+      color: #4A403A;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .month-btn:hover, .month-btn.active {
+      background: #7D9A7A;
+      color: white;
+      border-color: #7D9A7A;
+    }
+    .album-section { margin-top: 1.5rem; }
+    .photo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: 0.7rem;
+      margin-top: 1rem;
+    }
+    .photo-item {
+      aspect-ratio: 1;
+      border-radius: 12px;
+      overflow: hidden;
+      cursor: pointer;
+      border: 2px solid #F5D5D0;
+      background: #FFFBF7;
+    }
+    .photo-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.9);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    .lightbox.active { display: flex; }
+    .lightbox img {
+      max-width: 95%;
+      max-height: 90vh;
+      border-radius: 12px;
+    }
+    .lightbox-close {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: white;
+      border: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+<script>
+if(sessionStorage.getItem("ervaAuth")!=="ok"){window.location.href="index.html";}
+</script>
+  <div class="container">
+    <a href="index.html" class="back-link">← Anasayfaya Dön</a>
+    
+    <header>
+      <h1 class="site-title" style="font-size: 2.4rem;">Ömrümüzün En Güzel Yılı</h1>
+      <p class="subtitle">İlk yılın her ayı</p>
+    </header>
+
+    <div class="card">
+      <h2 style="font-family: 'Cormorant Garamond', serif; color: #7D9A7A; margin-bottom: 0.5rem;">Ay Seç</h2>
+      <p style="color:#7A6E66; font-size:0.9rem; margin-bottom:1rem;">Her ayın kutlama fotoğraflarını ekleyebilirsin</p>
+      <div id="monthGrid" class="month-grid"></div>
+    </div>
+
+    <div id="albumSection" class="album-section" style="display:none;">
+      <div class="card">
+        <h2 id="monthTitle" style="font-family: 'Cormorant Garamond', serif; color: #7D9A7A; margin-bottom: 0.8rem;"></h2>
+        
+        <div class="form-group">
+          <label for="monthNote">Kutlama Yazısı</label>
+          <textarea id="monthNote" placeholder="Bu ay için kutlama notunu yaz..." style="min-height:100px;"></textarea>
+          <button id="saveNoteBtn" class="btn" style="margin-top:0.6rem;">Yazıyı Kaydet</button>
+        </div>
+
+        <div id="savedNote" style="margin:1rem 0; padding:1rem; background:#FFFBF7; border-radius:12px; border-left:4px solid #A8C5A5; display:none;">
+          <p id="noteText" style="line-height:1.6;"></p>
+        </div>
+
+        <label for="photoUpload" class="btn" style="margin-bottom:1rem; display:inline-block;">Fotoğraf Ekle 📷</label>
+        <input type="file" id="photoUpload" accept="image/*" multiple style="display:none;">
+        <div id="photoGrid" class="photo-grid"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="lightbox" class="lightbox">
+    <button class="lightbox-close" onclick="closeLightbox()">×</button>
+    <img id="lightboxImg" alt="">
+  </div>
+
+  <footer>
+    <p>Erva'nın ilk yılı 💖</p>
+  </footer>
+
+  <script>
+    const months = [
+      { id: 1, name: '1. Ay' },
+      { id: 2, name: '2. Ay' },
+      { id: 3, name: '3. Ay' },
+      { id: 4, name: '4. Ay' },
+      { id: 5, name: '5. Ay' },
+      { id: 6, name: '6. Ay' },
+      { id: 7, name: '7. Ay' },
+      { id: 8, name: '8. Ay' },
+      { id: 9, name: '9. Ay' },
+      { id: 10, name: '10. Ay' },
+      { id: 11, name: '11. Ay' },
+      { id: 12, name: '12. Ay' }
+    ];
+
+    let currentMonth = null;
+
+    function getPhotos(monthId) {
+      return JSON.parse(localStorage.getItem('firstYear_' + monthId) || '[]');
+    }
+
+    function savePhotos(monthId, photos) {
+      localStorage.setItem('firstYear_' + monthId, JSON.stringify(photos));
+    }
+
+    function renderMonths() {
+      const grid = document.getElementById('monthGrid');
+      grid.innerHTML = months.map(m => `
+        <button class="month-btn" data-month="${m.id}">${m.name}</button>
+      `).join('');
+
+      grid.querySelectorAll('.month-btn').forEach(btn => {
+        btn.addEventListener('click', () => selectMonth(parseInt(btn.dataset.month)));
+      });
+    }
+
+    function getNote(monthId) {
+      return localStorage.getItem('firstYearNote_' + monthId) || '';
+    }
+
+    function saveNote(monthId, text) {
+      localStorage.setItem('firstYearNote_' + monthId, text);
+    }
+
+    function selectMonth(monthId) {
+      currentMonth = monthId;
+      const month = months.find(m => m.id === monthId);
+      
+      document.querySelectorAll('.month-btn').forEach(b => b.classList.remove('active'));
+      document.querySelector(`[data-month="${monthId}"]`).classList.add('active');
+
+      document.getElementById('monthTitle').textContent = month.name + ' Kutlaması';
+      
+      // Notu yükle
+      const note = getNote(monthId);
+      document.getElementById('monthNote').value = '';
+      const savedDiv = document.getElementById('savedNote');
+      const noteText = document.getElementById('noteText');
+      if (note) {
+        noteText.textContent = note;
+        savedDiv.style.display = 'block';
+      } else {
+        savedDiv.style.display = 'none';
+      }
+
+      renderPhotos(monthId);
+      document.getElementById('albumSection').style.display = 'block';
+      document.getElementById('albumSection').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    document.getElementById('saveNoteBtn').addEventListener('click', function() {
+      if (!currentMonth) return;
+      const text = document.getElementById('monthNote').value.trim();
+      if (!text) return;
+      saveNote(currentMonth, text);
+      document.getElementById('noteText').textContent = text;
+      document.getElementById('savedNote').style.display = 'block';
+      document.getElementById('monthNote').value = '';
+    });
+
+    function renderPhotos(monthId) {
+      const photos = getPhotos(monthId);
+      const grid = document.getElementById('photoGrid');
+
+      if (photos.length === 0) {
+        grid.innerHTML = '<p class="empty-state" style="grid-column:1/-1;">Bu ay için henüz fotoğraf eklenmemiş.</p>';
+        return;
+      }
+
+      grid.innerHTML = photos.map((src, i) => `
+        <div class="photo-item" onclick="openLightbox('${src}')">
+          <img src="${src}" alt="Fotoğraf ${i+1}">
+        </div>
+      `).join('');
+    }
+
+    document.getElementById('photoUpload').addEventListener('change', function(e) {
+      if (!currentMonth) return;
+      const files = Array.from(e.target.files);
+      if (!files.length) return;
+
+      const photos = getPhotos(currentMonth);
+      let loaded = 0;
+
+      files.forEach(file => {
+        const reader = new FileReader();
+        reader.onload = function(ev) {
+          photos.push(ev.target.result);
+          loaded++;
+          if (loaded === files.length) {
+            savePhotos(currentMonth, photos);
+            renderPhotos(currentMonth);
+          }
+        };
+        reader.readAsDataURL(file);
+      });
+      e.target.value = '';
+    });
+
+    function openLightbox(src) {
+      document.getElementById('lightboxImg').src = src;
+      document.getElementById('lightbox').classList.add('active');
+    }
+
+    function closeLightbox() {
+      document.getElementById('lightbox').classList.remove('active');
+    }
+
+    document.getElementById('lightbox').addEventListener('click', function(e) {
+      if (e.target === this) closeLightbox();
+    });
+
+    renderMonths();
+  </script>
+</body>
+</html>

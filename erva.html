@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Erva Girişi - Biricik Erva'mız</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .note-tabs {
+      display: flex;
+      gap: 0.6rem;
+      margin-bottom: 1.2rem;
+      flex-wrap: wrap;
+    }
+    .tab-btn {
+      flex: 1;
+      min-width: 100px;
+      padding: 0.8rem 0.5rem;
+      border: 2px solid #E8B4B8;
+      background: white;
+      border-radius: 12px;
+      font-family: 'Quicksand', sans-serif;
+      font-weight: 600;
+      color: #7D9A7A;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .tab-btn.active {
+      background: #7D9A7A;
+      color: white;
+      border-color: #7D9A7A;
+    }
+    .notes-panel {
+      display: none;
+    }
+    .notes-panel.active {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+<script>
+if(sessionStorage.getItem("ervaAuth")!=="ok"){window.location.href="index.html";}
+</script>
+  <div class="container">
+    <a href="index.html" class="back-link">← Anasayfaya Dön</a>
+    
+    <header>
+      <h1 class="site-title" style="font-size: 2.8rem;">👧 Erva'nın Notları</h1>
+      <p class="subtitle">Sadece sen görebilirsin</p>
+    </header>
+
+    <div class="note-tabs">
+      <button class="tab-btn active" data-target="anne">👩 Anne</button>
+      <button class="tab-btn" data-target="baba">👨 Baba</button>
+      <button class="tab-btn" data-target="arkadas">👫 Arkadaşlar</button>
+    </div>
+
+    <div id="anne" class="notes-panel active">
+      <div class="card">
+        <h2 style="font-family: 'Cormorant Garamond', serif; color: #7D9A7A; margin-bottom: 1rem;">Anne'nin Notları</h2>
+        <div id="anneNotes"></div>
+      </div>
+    </div>
+
+    <div id="baba" class="notes-panel">
+      <div class="card">
+        <h2 style="font-family: 'Cormorant Garamond', serif; color: #7D9A7A; margin-bottom: 1rem;">Baba'nın Notları</h2>
+        <div id="babaNotes"></div>
+      </div>
+    </div>
+
+    <div id="arkadas" class="notes-panel">
+      <div class="card">
+        <h2 style="font-family: 'Cormorant Garamond', serif; color: #7D9A7A; margin-bottom: 1rem;">Arkadaş Notları</h2>
+        <div id="arkadasNotes"></div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>Sadece Erva görebilir 💖</p>
+  </footer>
+
+  <script>
+    // Sekme geçişleri
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.notes-panel').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById(btn.dataset.target).classList.add('active');
+      });
+    });
+
+    function getAllNotes() {
+      const birthday = JSON.parse(localStorage.getItem('birthdayNotes') || '[]');
+      const general = JSON.parse(localStorage.getItem('generalNotes') || '[]');
+      return [...birthday, ...general].sort((a, b) => b.timestamp - a.timestamp);
+    }
+
+    function renderNotes(authorFilter, containerId) {
+      const all = getAllNotes();
+      let filtered = all.filter(n => {
+        if (authorFilter === 'Anne') return n.author === 'Anne';
+        if (authorFilter === 'Baba') return n.author === 'Baba';
+        if (authorFilter === 'Arkadaş') return n.author && n.author.includes('Arkadaş');
+        return false;
+      });
+
+      const container = document.getElementById(containerId);
+      if (filtered.length === 0) {
+        container.innerHTML = '<p class="empty-state">Henüz not yok.</p>';
+        return;
+      }
+
+      container.innerHTML = filtered.map(note => `
+        <div class="note-card">
+          <p class="note-text">${note.text.replace(/\n/g, '<br>')}</p>
+          <div class="note-footer">
+            <span class="note-author">${note.author === 'Anne' ? '👩' : note.author === 'Baba' ? '👨' : '👫'} ${note.author}</span>
+            <span class="note-date">${note.date}</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    renderNotes('Anne', 'anneNotes');
+    renderNotes('Baba', 'babaNotes');
+    renderNotes('Arkadaş', 'arkadasNotes');
+  </script>
+</body>
+</html>

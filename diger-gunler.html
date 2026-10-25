@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Diğer Günler - Biricik Erva'mız</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<script>
+if(sessionStorage.getItem("ervaAuth")!=="ok"){window.location.href="index.html";}
+</script>
+  <div class="container">
+    <a href="index.html" class="back-link">← Anasayfaya Dön</a>
+    
+    <header>
+      <h1 class="site-title" style="font-size: 2.8rem;">📝 Diğer Günler</h1>
+      <p class="subtitle">Günlük notlar, anılar ve tatlı sözler</p>
+    </header>
+
+    <div class="card">
+      <div id="generalNotesList">
+        <p class="empty-state">Henüz not yok. Anne veya Baba sayfasından "Diğer Gün Notu" bırakabilirsiniz.</p>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>Her gün için sevgi dolu notlar 💖</p>
+  </footer>
+
+  <script>
+    function loadGeneralNotes() {
+      const notes = JSON.parse(localStorage.getItem('generalNotes') || '[]')
+        .sort((a, b) => b.timestamp - a.timestamp);
+      
+      const container = document.getElementById('generalNotesList');
+      
+      if (notes.length === 0) {
+        container.innerHTML = '<p class="empty-state">Henüz not yok. Anne veya Baba sayfasından "Diğer Gün Notu" bırakabilirsiniz.</p>';
+        return;
+      }
+      
+      container.innerHTML = notes.map(note => `
+        <div class="note-card">
+          <div class="note-header">
+            <span class="author">${note.author}</span>
+            <span class="date">${note.date}</span>
+          </div>
+          <p class="note-text">${note.text.replace(/\n/g, '<br>')}</p>
+        </div>
+      `).join('');
+    }
+    
+    loadGeneralNotes();
+  </script>
+</body>
+</html>
